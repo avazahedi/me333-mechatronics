@@ -1,0 +1,929 @@
+
+out.elf:     file format elf32-tradlittlemips
+
+
+Disassembly of section .reset:
+
+bd007000 <_reset>:
+bd007000:	0f401c02 	jal	bd007008 <_startup>
+bd007004:	00000000 	nop
+
+bd007008 <_startup>:
+bd007008:	401a6000 	mfc0	k0,c0_status
+bd00700c:	7f5a04c0 	ext	k0,k0,0x13,0x1
+bd007010:	13400005 	beqz	k0,bd007028 <_no_nmi>
+bd007014:	00000000 	nop
+bd007018:	3c1a9d00 	lui	k0,0x9d00
+bd00701c:	275a79d0 	addiu	k0,k0,31184
+bd007020:	03400008 	jr	k0
+bd007024:	00000000 	nop
+
+bd007028 <_no_nmi>:
+bd007028:	3c1da001 	lui	sp,0xa001
+bd00702c:	27bdfff8 	addiu	sp,sp,-8
+bd007030:	3c1ca000 	lui	gp,0xa000
+bd007034:	279c7ff0 	addiu	gp,gp,32752
+bd007038:	3c089d00 	lui	t0,0x9d00
+bd00703c:	250879f8 	addiu	t0,t0,31224
+bd007040:	0100f809 	jalr	t0
+bd007044:	00000000 	nop
+
+bd007048 <_start_bss_init>:
+bd007048:	3c08a000 	lui	t0,0xa000
+bd00704c:	25080000 	addiu	t0,t0,0
+bd007050:	3c09a000 	lui	t1,0xa000
+bd007054:	25290000 	addiu	t1,t1,0
+bd007058:	10000003 	b	bd007068 <_bss_check>
+bd00705c:	00000000 	nop
+
+bd007060 <_bss_init>:
+bd007060:	ad000000 	sw	zero,0(t0)
+bd007064:	25080004 	addiu	t0,t0,4
+
+bd007068 <_bss_check>:
+bd007068:	0109082b 	sltu	at,t0,t1
+bd00706c:	1420fffc 	bnez	at,bd007060 <_bss_init>
+bd007070:	00000000 	nop
+bd007074:	3c089d00 	lui	t0,0x9d00
+bd007078:	25087994 	addiu	t0,t0,31124
+bd00707c:	0100f809 	jalr	t0
+bd007080:	00000000 	nop
+bd007084:	3c090000 	lui	t1,0x0
+bd007088:	25290000 	addiu	t1,t1,0
+bd00708c:	11200010 	beqz	t1,bd0070d0 <_ramfunc_done>
+bd007090:	00000000 	nop
+bd007094:	3c090001 	lui	t1,0x1
+bd007098:	25290000 	addiu	t1,t1,0
+bd00709c:	3c0abf88 	lui	t2,0xbf88
+bd0070a0:	254a2010 	addiu	t2,t2,8208
+bd0070a4:	ad490000 	sw	t1,0(t2)
+bd0070a8:	3c090001 	lui	t1,0x1
+bd0070ac:	25290000 	addiu	t1,t1,0
+bd0070b0:	3c0abf88 	lui	t2,0xbf88
+bd0070b4:	254a2020 	addiu	t2,t2,8224
+bd0070b8:	ad490000 	sw	t1,0(t2)
+bd0070bc:	3c090001 	lui	t1,0x1
+bd0070c0:	25290000 	addiu	t1,t1,0
+bd0070c4:	3c0abf88 	lui	t2,0xbf88
+bd0070c8:	254a2030 	addiu	t2,t2,8240
+bd0070cc:	ad490000 	sw	t1,0(t2)
+
+bd0070d0 <_ramfunc_done>:
+bd0070d0:	40804800 	mtc0	zero,c0_count
+bd0070d4:	240affff 	li	t2,-1
+bd0070d8:	408a5800 	mtc0	t2,c0_compare
+bd0070dc:	3c080040 	lui	t0,0x40
+bd0070e0:	400a6000 	mfc0	t2,c0_status
+bd0070e4:	010a5025 	or	t2,t0,t2
+bd0070e8:	408a6000 	mtc0	t2,c0_status
+bd0070ec:	3c099d00 	lui	t1,0x9d00
+bd0070f0:	25296000 	addiu	t1,t1,24576
+bd0070f4:	000000c0 	ehb
+bd0070f8:	40897801 	mtc0	t1,c0_ebase
+bd0070fc:	3c090000 	lui	t1,0x0
+bd007100:	25290001 	addiu	t1,t1,1
+bd007104:	240a0000 	li	t2,0
+bd007108:	7d2a4944 	ins	t2,t1,0x5,0x5
+bd00710c:	408a6001 	mtc0	t2,c0_intctl
+bd007110:	3c090080 	lui	t1,0x80
+bd007114:	40896800 	mtc0	t1,c0_cause
+bd007118:	40088000 	mfc0	t0,c0_config
+bd00711c:	7d090580 	ext	t1,t0,0x16,0x1
+bd007120:	00094c40 	sll	t1,t1,0x11
+bd007124:	40086000 	mfc0	t0,c0_status
+bd007128:	3c010058 	lui	at,0x58
+bd00712c:	01014024 	and	t0,t0,at
+bd007130:	01284025 	or	t0,t1,t0
+bd007134:	40886000 	mtc0	t0,c0_status
+bd007138:	000000c0 	ehb
+bd00713c:	3c089d00 	lui	t0,0x9d00
+bd007140:	25087a00 	addiu	t0,t0,31232
+bd007144:	0100f809 	jalr	t0
+bd007148:	00000000 	nop
+bd00714c:	40086000 	mfc0	t0,c0_status
+bd007150:	3c01ffbf 	lui	at,0xffbf
+bd007154:	3421ffff 	ori	at,at,0xffff
+bd007158:	01014024 	and	t0,t0,at
+bd00715c:	40886000 	mtc0	t0,c0_status
+bd007160:	30840000 	andi	a0,a0,0x0
+bd007164:	30a50000 	andi	a1,a1,0x0
+bd007168:	3c089d00 	lui	t0,0x9d00
+bd00716c:	25087824 	addiu	t0,t0,30756
+bd007170:	01000008 	jr	t0
+bd007174:	00000000 	nop
+
+Disassembly of section .bev_excpt:
+
+bfc07380 <_bev_exception>:
+bfc07380:	3c1a9d00 	lui	k0,0x9d00
+bfc07384:	275a7878 	addiu	k0,k0,30840
+bfc07388:	03400008 	jr	k0
+bfc0738c:	00000000 	nop
+
+Disassembly of section .app_excpt:
+
+9d006180 <_gen_exception>:
+9d006180:	3c1a9d00 	lui	k0,0x9d00
+9d006184:	275a7654 	addiu	k0,k0,30292
+9d006188:	03400008 	jr	k0
+9d00618c:	00000000 	nop
+
+Disassembly of section .vector_0:
+
+9d006200 <__vector_dispatch_0>:
+9d006200:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d006204:	00000000 	nop
+
+Disassembly of section .vector_1:
+
+9d006220 <__vector_dispatch_1>:
+9d006220:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d006224:	00000000 	nop
+
+Disassembly of section .vector_2:
+
+9d006240 <__vector_dispatch_2>:
+9d006240:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d006244:	00000000 	nop
+
+Disassembly of section .vector_3:
+
+9d006260 <__vector_dispatch_3>:
+9d006260:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d006264:	00000000 	nop
+
+Disassembly of section .vector_4:
+
+9d006280 <__vector_dispatch_4>:
+9d006280:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d006284:	00000000 	nop
+
+Disassembly of section .vector_5:
+
+9d0062a0 <__vector_dispatch_5>:
+9d0062a0:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d0062a4:	00000000 	nop
+
+Disassembly of section .vector_6:
+
+9d0062c0 <__vector_dispatch_6>:
+9d0062c0:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d0062c4:	00000000 	nop
+
+Disassembly of section .vector_7:
+
+9d0062e0 <__vector_dispatch_7>:
+9d0062e0:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d0062e4:	00000000 	nop
+
+Disassembly of section .vector_8:
+
+9d006300 <__vector_dispatch_8>:
+9d006300:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d006304:	00000000 	nop
+
+Disassembly of section .vector_9:
+
+9d006320 <__vector_dispatch_9>:
+9d006320:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d006324:	00000000 	nop
+
+Disassembly of section .vector_10:
+
+9d006340 <__vector_dispatch_10>:
+9d006340:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d006344:	00000000 	nop
+
+Disassembly of section .vector_11:
+
+9d006360 <__vector_dispatch_11>:
+9d006360:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d006364:	00000000 	nop
+
+Disassembly of section .vector_12:
+
+9d006380 <__vector_dispatch_12>:
+9d006380:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d006384:	00000000 	nop
+
+Disassembly of section .vector_13:
+
+9d0063a0 <__vector_dispatch_13>:
+9d0063a0:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d0063a4:	00000000 	nop
+
+Disassembly of section .vector_14:
+
+9d0063c0 <__vector_dispatch_14>:
+9d0063c0:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d0063c4:	00000000 	nop
+
+Disassembly of section .vector_15:
+
+9d0063e0 <__vector_dispatch_15>:
+9d0063e0:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d0063e4:	00000000 	nop
+
+Disassembly of section .vector_16:
+
+9d006400 <__vector_dispatch_16>:
+9d006400:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d006404:	00000000 	nop
+
+Disassembly of section .vector_17:
+
+9d006420 <__vector_dispatch_17>:
+9d006420:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d006424:	00000000 	nop
+
+Disassembly of section .vector_18:
+
+9d006440 <__vector_dispatch_18>:
+9d006440:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d006444:	00000000 	nop
+
+Disassembly of section .vector_19:
+
+9d006460 <__vector_dispatch_19>:
+9d006460:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d006464:	00000000 	nop
+
+Disassembly of section .vector_20:
+
+9d006480 <__vector_dispatch_20>:
+9d006480:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d006484:	00000000 	nop
+
+Disassembly of section .vector_21:
+
+9d0064a0 <__vector_dispatch_21>:
+9d0064a0:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d0064a4:	00000000 	nop
+
+Disassembly of section .vector_22:
+
+9d0064c0 <__vector_dispatch_22>:
+9d0064c0:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d0064c4:	00000000 	nop
+
+Disassembly of section .vector_23:
+
+9d0064e0 <__vector_dispatch_23>:
+9d0064e0:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d0064e4:	00000000 	nop
+
+Disassembly of section .vector_24:
+
+9d006500 <__vector_dispatch_24>:
+9d006500:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d006504:	00000000 	nop
+
+Disassembly of section .vector_25:
+
+9d006520 <__vector_dispatch_25>:
+9d006520:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d006524:	00000000 	nop
+
+Disassembly of section .vector_26:
+
+9d006540 <__vector_dispatch_26>:
+9d006540:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d006544:	00000000 	nop
+
+Disassembly of section .vector_27:
+
+9d006560 <__vector_dispatch_27>:
+9d006560:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d006564:	00000000 	nop
+
+Disassembly of section .vector_28:
+
+9d006580 <__vector_dispatch_28>:
+9d006580:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d006584:	00000000 	nop
+
+Disassembly of section .vector_29:
+
+9d0065a0 <__vector_dispatch_29>:
+9d0065a0:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d0065a4:	00000000 	nop
+
+Disassembly of section .vector_30:
+
+9d0065c0 <__vector_dispatch_30>:
+9d0065c0:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d0065c4:	00000000 	nop
+
+Disassembly of section .vector_31:
+
+9d0065e0 <__vector_dispatch_31>:
+9d0065e0:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d0065e4:	00000000 	nop
+
+Disassembly of section .vector_32:
+
+9d006600 <__vector_dispatch_32>:
+9d006600:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d006604:	00000000 	nop
+
+Disassembly of section .vector_33:
+
+9d006620 <__vector_dispatch_33>:
+9d006620:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d006624:	00000000 	nop
+
+Disassembly of section .vector_34:
+
+9d006640 <__vector_dispatch_34>:
+9d006640:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d006644:	00000000 	nop
+
+Disassembly of section .vector_35:
+
+9d006660 <__vector_dispatch_35>:
+9d006660:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d006664:	00000000 	nop
+
+Disassembly of section .vector_36:
+
+9d006680 <__vector_dispatch_36>:
+9d006680:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d006684:	00000000 	nop
+
+Disassembly of section .vector_37:
+
+9d0066a0 <__vector_dispatch_37>:
+9d0066a0:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d0066a4:	00000000 	nop
+
+Disassembly of section .vector_38:
+
+9d0066c0 <__vector_dispatch_38>:
+9d0066c0:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d0066c4:	00000000 	nop
+
+Disassembly of section .vector_39:
+
+9d0066e0 <__vector_dispatch_39>:
+9d0066e0:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d0066e4:	00000000 	nop
+
+Disassembly of section .vector_40:
+
+9d006700 <__vector_dispatch_40>:
+9d006700:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d006704:	00000000 	nop
+
+Disassembly of section .vector_41:
+
+9d006720 <__vector_dispatch_41>:
+9d006720:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d006724:	00000000 	nop
+
+Disassembly of section .vector_42:
+
+9d006740 <__vector_dispatch_42>:
+9d006740:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d006744:	00000000 	nop
+
+Disassembly of section .vector_43:
+
+9d006760 <__vector_dispatch_43>:
+9d006760:	0b401e42 	j	9d007908 <_DefaultInterrupt>
+9d006764:	00000000 	nop
+
+Disassembly of section .rodata:
+
+9d007490 <.rodata>:
+9d007490:	00000a0d 	break	0x0,0x28
+
+Disassembly of section ._debug_exception:
+
+bfc00480 <__DbgExecReturn>:
+bfc00480:	409bf800 	mtc0	k1,c0_desave
+bfc00484:	000000c0 	ehb
+bfc00488:	3c1b9d00 	lui	k1,0x9d00
+bfc0048c:	277b7950 	addiu	k1,k1,31056
+bfc00490:	13600002 	beqz	k1,bfc0049c <__DbgExecReturn+0x1c>
+bfc00494:	00000000 	nop
+bfc00498:	409bc000 	mtc0	k1,c0_depc
+bfc0049c:	401bf800 	mfc0	k1,c0_desave
+bfc004a0:	000000c0 	ehb
+bfc004a4:	4200001f 	deret
+bfc004a8:	00000000 	nop
+
+Disassembly of section .text:
+
+9d007494 <NU32DIP_Startup>:
+#include "nu32dip.h"
+
+void NU32DIP_Startup() {
+9d007494:	27bdfff8 	addiu	sp,sp,-8
+9d007498:	afbf0004 	sw	ra,4(sp)
+    __builtin_disable_interrupts(); // disable interrupts while initializing things
+9d00749c:	41626000 	di	v0
+9d0074a0:	000000c0 	ehb
+
+    // set the CP0 CONFIG register to indicate that kseg0 is cacheable (0x3)
+    __builtin_mtc0(_CP0_CONFIG, _CP0_CONFIG_SELECT, 0xa4210583);
+9d0074a4:	3c02a421 	lui	v0,0xa421
+9d0074a8:	24420583 	addiu	v0,v0,1411
+9d0074ac:	40828000 	mtc0	v0,c0_config
+9d0074b0:	000000c0 	ehb
+
+    // 0 data RAM access wait states
+    BMXCONbits.BMXWSDRM = 0x0;
+9d0074b4:	3c02bf88 	lui	v0,0xbf88
+9d0074b8:	8c432000 	lw	v1,8192(v0)
+9d0074bc:	7c033184 	ins	v1,zero,0x6,0x1
+9d0074c0:	ac432000 	sw	v1,8192(v0)
+
+    // enable multi vector interrupts
+    INTCONbits.MVEC = 0x1;
+9d0074c4:	3c02bf88 	lui	v0,0xbf88
+9d0074c8:	8c441000 	lw	a0,4096(v0)
+9d0074cc:	24030001 	li	v1,1
+9d0074d0:	7c646304 	ins	a0,v1,0xc,0x1
+9d0074d4:	ac441000 	sw	a0,4096(v0)
+
+    // disable JTAG to get pins back
+    DDPCONbits.JTAGEN = 0;
+9d0074d8:	3c02bf81 	lui	v0,0xbf81
+9d0074dc:	9444f200 	lhu	a0,-3584(v0)
+9d0074e0:	7c0418c4 	ins	a0,zero,0x3,0x1
+9d0074e4:	a444f200 	sh	a0,-3584(v0)
+
+    // do your TRIS and LAT commands here
+    TRISBCLR = 0b110000; // B4 and B5 LEDs
+9d0074e8:	3c02bf88 	lui	v0,0xbf88
+9d0074ec:	24040030 	li	a0,48
+9d0074f0:	ac446114 	sw	a0,24852(v0)
+    TRISASET = 0b010000; // A4 user button
+9d0074f4:	3c02bf88 	lui	v0,0xbf88
+9d0074f8:	24040010 	li	a0,16
+9d0074fc:	ac446018 	sw	a0,24600(v0)
+    //NU32_LED1 = 1; // LED1 is off
+    NU32DIP_YELLOW = 1;
+9d007500:	3c02bf88 	lui	v0,0xbf88
+9d007504:	94446130 	lhu	a0,24880(v0)
+9d007508:	7c642944 	ins	a0,v1,0x5,0x1
+9d00750c:	a4446130 	sh	a0,24880(v0)
+    //NU32_LED2 = 0; // LED2 is on
+    NU32DIP_GREEN = 0;
+9d007510:	94446130 	lhu	a0,24880(v0)
+9d007514:	7c042104 	ins	a0,zero,0x4,0x1
+9d007518:	a4446130 	sh	a0,24880(v0)
+
+    //UART1 pins
+    U1RXRbits.U1RXR = 0b0000; // Set A2 to U1RX
+9d00751c:	3c02bf81 	lui	v0,0xbf81
+9d007520:	9044fa50 	lbu	a0,-1456(v0)
+9d007524:	7c041804 	ins	a0,zero,0x0,0x4
+9d007528:	a044fa50 	sb	a0,-1456(v0)
+    RPB3Rbits.RPB3R = 0b0001; // Set B3 to U1TX
+9d00752c:	3c02bf81 	lui	v0,0xbf81
+9d007530:	9044fb38 	lbu	a0,-1224(v0)
+9d007534:	7c641804 	ins	a0,v1,0x0,0x4
+9d007538:	a044fb38 	sb	a0,-1224(v0)
+
+    // turn on UART1 without an interrupt
+    U1MODEbits.BRGH = 0; // set baud to NU32_DESIRED_BAUD
+9d00753c:	3c02bf80 	lui	v0,0xbf80
+9d007540:	94446000 	lhu	a0,24576(v0)
+9d007544:	7c0418c4 	ins	a0,zero,0x3,0x1
+9d007548:	a4446000 	sh	a0,24576(v0)
+    U1BRG = ((NU32DIP_SYS_FREQ / NU32DIP_DESIRED_BAUD) / 16) - 1;
+9d00754c:	3c04bf80 	lui	a0,0xbf80
+9d007550:	2405000c 	li	a1,12
+9d007554:	ac856040 	sw	a1,24640(a0)
+
+    // 8 bit, no parity bit, and 1 stop bit (8N1 setup)
+    U1MODEbits.PDSEL = 0;
+9d007558:	94446000 	lhu	a0,24576(v0)
+9d00755c:	7c041044 	ins	a0,zero,0x1,0x2
+9d007560:	a4446000 	sh	a0,24576(v0)
+    U1MODEbits.STSEL = 0;
+9d007564:	94446000 	lhu	a0,24576(v0)
+9d007568:	7c040004 	ins	a0,zero,0x0,0x1
+9d00756c:	a4446000 	sh	a0,24576(v0)
+
+    // configure TX & RX pins as output & input pins
+    U1STAbits.UTXEN = 1;
+9d007570:	3c04bf80 	lui	a0,0xbf80
+9d007574:	8c856010 	lw	a1,24592(a0)
+9d007578:	7c655284 	ins	a1,v1,0xa,0x1
+9d00757c:	ac856010 	sw	a1,24592(a0)
+    U1STAbits.URXEN = 1;
+9d007580:	8c856010 	lw	a1,24592(a0)
+9d007584:	7c656304 	ins	a1,v1,0xc,0x1
+9d007588:	ac856010 	sw	a1,24592(a0)
+    // configure without hardware flow control
+    U1MODEbits.UEN = 0;
+9d00758c:	94446000 	lhu	a0,24576(v0)
+9d007590:	7c044a04 	ins	a0,zero,0x8,0x2
+9d007594:	a4446000 	sh	a0,24576(v0)
+
+    // enable the uart
+    U1MODEbits.ON = 1;
+9d007598:	94446000 	lhu	a0,24576(v0)
+9d00759c:	7c647bc4 	ins	a0,v1,0xf,0x1
+9d0075a0:	a4446000 	sh	a0,24576(v0)
+
+    __builtin_enable_interrupts();
+9d0075a4:	41626020 	ei	v0
+}
+9d0075a8:	8fbf0004 	lw	ra,4(sp)
+9d0075ac:	03e00008 	jr	ra
+9d0075b0:	27bd0008 	addiu	sp,sp,8
+
+9d0075b4 <NU32DIP_ReadUART1>:
+// block other functions until you get a '\r' or '\n'
+// send the pointer to your char array and the number of elements in the array
+
+void NU32DIP_ReadUART1(char * message, int maxLength) {
+    char data = 0;
+    int complete = 0, num_bytes = 0;
+9d0075b4:	00001025 	move	v0,zero
+    // loop until you get a '\r' or '\n'
+    while (!complete) {
+        if (U1STAbits.URXDA) { // if data is available
+9d0075b8:	3c0abf80 	lui	t2,0xbf80
+            data = U1RXREG; // read the data
+9d0075bc:	3c09bf80 	lui	t1,0xbf80
+            if ((data == '\n') || (data == '\r')) {
+9d0075c0:	2408000a 	li	t0,10
+9d0075c4:	2407000d 	li	a3,13
+        if (U1STAbits.URXDA) { // if data is available
+9d0075c8:	8d436010 	lw	v1,24592(t2)
+9d0075cc:	30630001 	andi	v1,v1,0x1
+9d0075d0:	1060fffd 	beqz	v1,9d0075c8 <NU32DIP_ReadUART1+0x14>
+9d0075d4:	00000000 	nop
+            data = U1RXREG; // read the data
+9d0075d8:	8d236030 	lw	v1,24624(t1)
+9d0075dc:	7c031c20 	seb	v1,v1
+            if ((data == '\n') || (data == '\r')) {
+9d0075e0:	5068000b 	beql	v1,t0,9d007610 <NU32DIP_ReadUART1+0x5c>
+9d0075e4:	00822021 	addu	a0,a0,v0
+9d0075e8:	10670008 	beq	v1,a3,9d00760c <NU32DIP_ReadUART1+0x58>
+9d0075ec:	24460001 	addiu	a2,v0,1
+                complete = 1;
+            } else {
+                message[num_bytes] = data;
+                ++num_bytes;
+                // roll over if the array is too small
+                if (num_bytes >= maxLength) {
+9d0075f0:	00c5302a 	slt	a2,a2,a1
+                    num_bytes = 0;
+9d0075f4:	244b0001 	addiu	t3,v0,1
+                message[num_bytes] = data;
+9d0075f8:	00821021 	addu	v0,a0,v0
+9d0075fc:	a0430000 	sb	v1,0(v0)
+9d007600:	01601025 	move	v0,t3
+9d007604:	1000fff0 	b	9d0075c8 <NU32DIP_ReadUART1+0x14>
+9d007608:	0006100a 	movz	v0,zero,a2
+                }
+            }
+        }
+    }
+    // end the string
+    message[num_bytes] = '\0';
+9d00760c:	00822021 	addu	a0,a0,v0
+}
+9d007610:	03e00008 	jr	ra
+9d007614:	a0800000 	sb	zero,0(a0)
+
+9d007618 <NU32DIP_WriteUART1>:
+
+// Write a character array using UART1
+
+void NU32DIP_WriteUART1(const char * string) {
+    while (*string != '\0') {
+9d007618:	80820000 	lb	v0,0(a0)
+9d00761c:	1040000b 	beqz	v0,9d00764c <NU32DIP_WriteUART1+0x34>
+9d007620:	3c06bf80 	lui	a2,0xbf80
+        while (U1STAbits.UTXBF) {
+            ; // wait until tx buffer isn't full
+        }
+        U1TXREG = *string;
+9d007624:	3c05bf80 	lui	a1,0xbf80
+        while (U1STAbits.UTXBF) {
+9d007628:	8cc36010 	lw	v1,24592(a2)
+9d00762c:	7c630240 	ext	v1,v1,0x9,0x1
+9d007630:	1460fffd 	bnez	v1,9d007628 <NU32DIP_WriteUART1+0x10>
+9d007634:	00000000 	nop
+        U1TXREG = *string;
+9d007638:	aca26020 	sw	v0,24608(a1)
+        ++string;
+9d00763c:	24840001 	addiu	a0,a0,1
+    while (*string != '\0') {
+9d007640:	80820000 	lb	v0,0(a0)
+9d007644:	1440fff8 	bnez	v0,9d007628 <NU32DIP_WriteUART1+0x10>
+9d007648:	00000000 	nop
+    }
+}
+9d00764c:	03e00008 	jr	ra
+9d007650:	00000000 	nop
+
+Disassembly of section .text.general_exception:
+
+9d007654 <_general_exception_context>:
+9d007654:	27bdffa8 	addiu	sp,sp,-88
+9d007658:	afa10004 	sw	at,4(sp)
+9d00765c:	afa20008 	sw	v0,8(sp)
+9d007660:	afa3000c 	sw	v1,12(sp)
+9d007664:	afa40010 	sw	a0,16(sp)
+9d007668:	afa50014 	sw	a1,20(sp)
+9d00766c:	afa60018 	sw	a2,24(sp)
+9d007670:	afa7001c 	sw	a3,28(sp)
+9d007674:	afa80020 	sw	t0,32(sp)
+9d007678:	afa90024 	sw	t1,36(sp)
+9d00767c:	afaa0028 	sw	t2,40(sp)
+9d007680:	afab002c 	sw	t3,44(sp)
+9d007684:	afac0030 	sw	t4,48(sp)
+9d007688:	afad0034 	sw	t5,52(sp)
+9d00768c:	afae0038 	sw	t6,56(sp)
+9d007690:	afaf003c 	sw	t7,60(sp)
+9d007694:	afb80040 	sw	t8,64(sp)
+9d007698:	afb90044 	sw	t9,68(sp)
+9d00769c:	afbf0048 	sw	ra,72(sp)
+9d0076a0:	00004012 	mflo	t0
+9d0076a4:	afa8004c 	sw	t0,76(sp)
+9d0076a8:	00004010 	mfhi	t0
+9d0076ac:	afa80050 	sw	t0,80(sp)
+9d0076b0:	3c1a9d00 	lui	k0,0x9d00
+9d0076b4:	275a78c0 	addiu	k0,k0,30912
+9d0076b8:	00000000 	nop
+9d0076bc:	40046800 	mfc0	a0,c0_cause
+9d0076c0:	40056000 	mfc0	a1,c0_status
+9d0076c4:	0340f809 	jalr	k0
+9d0076c8:	00000000 	nop
+9d0076cc:	8fa80050 	lw	t0,80(sp)
+9d0076d0:	01000011 	mthi	t0
+9d0076d4:	8fa8004c 	lw	t0,76(sp)
+9d0076d8:	01000013 	mtlo	t0
+9d0076dc:	8fa10004 	lw	at,4(sp)
+9d0076e0:	8fa20008 	lw	v0,8(sp)
+9d0076e4:	8fa3000c 	lw	v1,12(sp)
+9d0076e8:	8fa40010 	lw	a0,16(sp)
+9d0076ec:	8fa50014 	lw	a1,20(sp)
+9d0076f0:	8fa60018 	lw	a2,24(sp)
+9d0076f4:	8fa7001c 	lw	a3,28(sp)
+9d0076f8:	8fa80020 	lw	t0,32(sp)
+9d0076fc:	8fa90024 	lw	t1,36(sp)
+9d007700:	8faa0028 	lw	t2,40(sp)
+9d007704:	8fab002c 	lw	t3,44(sp)
+9d007708:	8fac0030 	lw	t4,48(sp)
+9d00770c:	8fad0034 	lw	t5,52(sp)
+9d007710:	8fae0038 	lw	t6,56(sp)
+9d007714:	8faf003c 	lw	t7,60(sp)
+9d007718:	8fb80040 	lw	t8,64(sp)
+9d00771c:	8fb90044 	lw	t9,68(sp)
+9d007720:	8fbf0048 	lw	ra,72(sp)
+9d007724:	27bd0058 	addiu	sp,sp,88
+9d007728:	000000c0 	ehb
+9d00772c:	42000018 	eret
+
+Disassembly of section .text.dinit.startup:
+
+9d007730 <__pic32_data_init_impl>:
+9d007730:	3c089d00 	lui	t0,0x9d00
+9d007734:	250879e8 	addiu	t0,t0,31208
+9d007738:	1100001b 	beqz	t0,9d0077a8 <_dinit_end+0x18>
+9d00773c:	00000000 	nop
+9d007740:	8d090000 	lw	t1,0(t0)
+9d007744:	11200018 	beqz	t1,9d0077a8 <_dinit_end+0x18>
+9d007748:	25080004 	addiu	t0,t0,4
+9d00774c:	8d0a0000 	lw	t2,0(t0)
+9d007750:	25080004 	addiu	t0,t0,4
+9d007754:	8d0b0000 	lw	t3,0(t0)
+9d007758:	11600009 	beqz	t3,9d007780 <_dinit_clear>
+9d00775c:	25080004 	addiu	t0,t0,4
+
+9d007760 <_dinit_copy>:
+9d007760:	910c0000 	lbu	t4,0(t0)
+9d007764:	254affff 	addiu	t2,t2,-1
+9d007768:	25080001 	addiu	t0,t0,1
+9d00776c:	a12c0000 	sb	t4,0(t1)
+9d007770:	1540fffb 	bnez	t2,9d007760 <_dinit_copy>
+9d007774:	25290001 	addiu	t1,t1,1
+9d007778:	10000005 	b	9d007790 <_dinit_end>
+9d00777c:	00000000 	nop
+
+9d007780 <_dinit_clear>:
+9d007780:	a1200000 	sb	zero,0(t1)
+9d007784:	254affff 	addiu	t2,t2,-1
+9d007788:	1540fffd 	bnez	t2,9d007780 <_dinit_clear>
+9d00778c:	25290001 	addiu	t1,t1,1
+
+9d007790 <_dinit_end>:
+9d007790:	25080003 	addiu	t0,t0,3
+9d007794:	240afffc 	li	t2,-4
+9d007798:	01484024 	and	t0,t2,t0
+9d00779c:	8d090000 	lw	t1,0(t0)
+9d0077a0:	1520ffe7 	bnez	t1,9d007740 <__pic32_data_init_impl+0x10>
+9d0077a4:	00000000 	nop
+9d0077a8:	03e00008 	jr	ra
+9d0077ac:	00000000 	nop
+
+Disassembly of section .text:
+
+9d0077b0 <main>:
+#include "nu32dip.h"          // constants, funcs for startup and UART
+#include <xc.h>
+
+#define MAX_MESSAGE_LENGTH 200
+
+int main(void) {
+9d0077b0:	27bdff18 	addiu	sp,sp,-232
+9d0077b4:	afbf00e4 	sw	ra,228(sp)
+9d0077b8:	afb100e0 	sw	s1,224(sp)
+  char message[MAX_MESSAGE_LENGTH];
+  
+  NU32DIP_Startup(); // cache on, interrupts on, LED/button init, UART init
+9d0077bc:	0f401d25 	jal	9d007494 <NU32DIP_Startup>
+9d0077c0:	afb000dc 	sw	s0,220(sp)
+  while (1) {
+    NU32DIP_ReadUART1(message, MAX_MESSAGE_LENGTH);  // get message from computer
+    NU32DIP_WriteUART1(message);                     // send message back
+    NU32DIP_WriteUART1("\r\n");                      // carriage return and newline
+9d0077c4:	3c119d00 	lui	s1,0x9d00
+9d0077c8:	26317490 	addiu	s1,s1,29840
+    NU32DIP_GREEN = !NU32DIP_GREEN;                       // toggle the LEDs
+9d0077cc:	3c10bf88 	lui	s0,0xbf88
+    NU32DIP_ReadUART1(message, MAX_MESSAGE_LENGTH);  // get message from computer
+9d0077d0:	240500c8 	li	a1,200
+9d0077d4:	0f401d6d 	jal	9d0075b4 <NU32DIP_ReadUART1>
+9d0077d8:	27a40010 	addiu	a0,sp,16
+    NU32DIP_WriteUART1(message);                     // send message back
+9d0077dc:	0f401d86 	jal	9d007618 <NU32DIP_WriteUART1>
+9d0077e0:	27a40010 	addiu	a0,sp,16
+    NU32DIP_WriteUART1("\r\n");                      // carriage return and newline
+9d0077e4:	0f401d86 	jal	9d007618 <NU32DIP_WriteUART1>
+9d0077e8:	02202025 	move	a0,s1
+    NU32DIP_GREEN = !NU32DIP_GREEN;                       // toggle the LEDs
+9d0077ec:	8e026130 	lw	v0,24880(s0)
+9d0077f0:	7c420100 	ext	v0,v0,0x4,0x1
+9d0077f4:	38420001 	xori	v0,v0,0x1
+9d0077f8:	96036130 	lhu	v1,24880(s0)
+9d0077fc:	7c432104 	ins	v1,v0,0x4,0x1
+9d007800:	a6036130 	sh	v1,24880(s0)
+    NU32DIP_YELLOW = !NU32DIP_YELLOW;
+9d007804:	8e026130 	lw	v0,24880(s0)
+9d007808:	7c420140 	ext	v0,v0,0x5,0x1
+9d00780c:	38420001 	xori	v0,v0,0x1
+9d007810:	96036130 	lhu	v1,24880(s0)
+9d007814:	7c432944 	ins	v1,v0,0x5,0x1
+9d007818:	a6036130 	sh	v1,24880(s0)
+    NU32DIP_ReadUART1(message, MAX_MESSAGE_LENGTH);  // get message from computer
+9d00781c:	1000ffed 	b	9d0077d4 <main+0x24>
+9d007820:	240500c8 	li	a1,200
+
+Disassembly of section .text.main_entry:
+
+9d007824 <_main_entry>:
+9d007824:	3c040000 	lui	a0,0x0
+9d007828:	27bdffe8 	addiu	sp,sp,-24
+9d00782c:	24840000 	addiu	a0,a0,0
+9d007830:	10800003 	beqz	a0,9d007840 <_main_entry+0x1c>
+9d007834:	afbf0014 	sw	ra,20(sp)
+9d007838:	0080f809 	jalr	a0
+9d00783c:	00000000 	nop
+9d007840:	30840000 	andi	a0,a0,0x0
+9d007844:	30a50000 	andi	a1,a1,0x0
+9d007848:	3c089d00 	lui	t0,0x9d00
+9d00784c:	250877b0 	addiu	t0,t0,30640
+9d007850:	0100f809 	jalr	t0
+9d007854:	00000000 	nop
+
+9d007858 <__crt0_exit>:
+9d007858:	3c020000 24420000 10400003 00000000     ...<..B$..@.....
+9d007868:	0040f809 00000000 1000fff9 00000000     ..@.............
+
+Disassembly of section .text._bootstrap_exception_handler:
+
+9d007878 <_bootstrap_exception_handler>:
+9d007878:	3c020000 	lui	v0,0x0
+9d00787c:	24420000 	addiu	v0,v0,0
+9d007880:	10400005 	beqz	v0,9d007898 <_bootstrap_exception_handler+0x20>
+9d007884:	3c020000 	lui	v0,0x0
+9d007888:	24420000 	addiu	v0,v0,0
+9d00788c:	10400003 	beqz	v0,9d00789c <_bootstrap_exception_handler+0x24>
+9d007890:	3c029d00 	lui	v0,0x9d00
+9d007894:	7000003f 	sdbbp
+9d007898:	3c029d00 	lui	v0,0x9d00
+9d00789c:	24427950 	addiu	v0,v0,31056
+9d0078a0:	10400005 	beqz	v0,9d0078b8 <_bootstrap_exception_handler+0x40>
+9d0078a4:	00000000 	nop
+9d0078a8:	27bdffe8 	addiu	sp,sp,-24
+9d0078ac:	afbf0014 	sw	ra,20(sp)
+9d0078b0:	0040f809 	jalr	v0
+9d0078b4:	00000000 	nop
+9d0078b8:	1000ffff 	b	9d0078b8 <_bootstrap_exception_handler+0x40>
+9d0078bc:	00000000 	nop
+
+Disassembly of section .text._general_exception_handler:
+
+9d0078c0 <_general_exception_handler>:
+9d0078c0:	3c020000 	lui	v0,0x0
+9d0078c4:	24420000 	addiu	v0,v0,0
+9d0078c8:	10400005 	beqz	v0,9d0078e0 <_general_exception_handler+0x20>
+9d0078cc:	3c020000 	lui	v0,0x0
+9d0078d0:	24420000 	addiu	v0,v0,0
+9d0078d4:	10400003 	beqz	v0,9d0078e4 <_general_exception_handler+0x24>
+9d0078d8:	3c029d00 	lui	v0,0x9d00
+9d0078dc:	7000003f 	sdbbp
+9d0078e0:	3c029d00 	lui	v0,0x9d00
+9d0078e4:	24427950 	addiu	v0,v0,31056
+9d0078e8:	10400005 	beqz	v0,9d007900 <_general_exception_handler+0x40>
+9d0078ec:	00000000 	nop
+9d0078f0:	27bdffe8 	addiu	sp,sp,-24
+9d0078f4:	afbf0014 	sw	ra,20(sp)
+9d0078f8:	0040f809 	jalr	v0
+9d0078fc:	00000000 	nop
+9d007900:	1000ffff 	b	9d007900 <_general_exception_handler+0x40>
+9d007904:	00000000 	nop
+
+Disassembly of section .vector_default:
+
+9d007908 <_DefaultInterrupt>:
+9d007908:	3c020000 	lui	v0,0x0
+9d00790c:	24420000 	addiu	v0,v0,0
+9d007910:	10400007 	beqz	v0,9d007930 <_DefaultInterrupt+0x28>
+9d007914:	3c020000 	lui	v0,0x0
+9d007918:	24420000 	addiu	v0,v0,0
+9d00791c:	50400005 	beqzl	v0,9d007934 <_DefaultInterrupt+0x2c>
+9d007920:	3c029d00 	lui	v0,0x9d00
+9d007924:	7000003f 	sdbbp
+9d007928:	03e00008 	jr	ra
+9d00792c:	00000000 	nop
+9d007930:	3c029d00 	lui	v0,0x9d00
+9d007934:	24427950 	addiu	v0,v0,31056
+9d007938:	10400003 	beqz	v0,9d007948 <_DefaultInterrupt+0x40>
+9d00793c:	00000000 	nop
+9d007940:	0040f809 	jalr	v0
+9d007944:	00000000 	nop
+9d007948:	03e00008 	jr	ra
+9d00794c:	00000000 	nop
+
+Disassembly of section .text:
+
+9d007950 <__pic32_software_reset>:
+9d007950:	41606000 	di
+9d007954:	000000c0 	ehb
+9d007958:	3c03aa99 	lui	v1,0xaa99
+9d00795c:	3c02bf81 	lui	v0,0xbf81
+9d007960:	24636655 	addiu	v1,v1,26197
+9d007964:	ac40f230 	sw	zero,-3536(v0)
+9d007968:	ac43f230 	sw	v1,-3536(v0)
+9d00796c:	3c035566 	lui	v1,0x5566
+9d007970:	346399aa 	ori	v1,v1,0x99aa
+9d007974:	ac43f230 	sw	v1,-3536(v0)
+9d007978:	3c02bf81 	lui	v0,0xbf81
+9d00797c:	24030001 	li	v1,1
+9d007980:	ac43f618 	sw	v1,-2536(v0)
+9d007984:	3c02bf81 	lui	v0,0xbf81
+9d007988:	8c42f610 	lw	v0,-2544(v0)
+9d00798c:	0b401e56 	j	9d007958 <__pic32_software_reset+0x8>
+9d007990:	00000000 	nop
+
+Disassembly of section .text.dinit.startup:
+
+9d007994 <__pic32_data_init>:
+9d007994:	03e01825 	move	v1,ra
+9d007998:	3c089d00 	lui	t0,0x9d00
+9d00799c:	25087730 	addiu	t0,t0,30512
+9d0079a0:	0100f809 	jalr	t0
+9d0079a4:	00000000 	nop
+9d0079a8:	0060f825 	move	ra,v1
+9d0079ac:	03e00008 	jr	ra
+9d0079b0:	00000000 	nop
+
+Disassembly of section .text:
+
+9d0079d0 <_nmi_handler>:
+9d0079d0:	401a6000 	mfc0	k0,c0_status
+9d0079d4:	3c1bffbf 	lui	k1,0xffbf
+9d0079d8:	377bffff 	ori	k1,k1,0xffff
+9d0079dc:	035bd024 	and	k0,k0,k1
+9d0079e0:	409a6000 	mtc0	k0,c0_status
+9d0079e4:	42000018 	eret
+
+Disassembly of section .dinit:
+
+9d0079e8 <.dinit>:
+9d0079e8:	00000000 	nop
+9d0079ec:	44444444 	0x44444444
+9d0079f0:	44444444 	0x44444444
+9d0079f4:	44444444 	0x44444444
+
+Disassembly of section .text._on_reset:
+
+9d0079f8 <_on_reset>:
+9d0079f8:	03e00008 	jr	ra
+9d0079fc:	00000000 	nop
+
+Disassembly of section .text._on_bootstrap:
+
+9d007a00 <_on_bootstrap>:
+9d007a00:	03e00008 	jr	ra
+9d007a04:	00000000 	nop

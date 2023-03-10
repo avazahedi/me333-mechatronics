@@ -1,11 +1,13 @@
 #include "nu32dip.h"          // config bits, constants, funcs for startup and UART
 // include other header files here
 #include "encoder.h"
+#include "utilities.h"
 
 #define BUF_SIZE 200
 
 int main() 
 {
+  set_mode(IDLE);
   char buffer[BUF_SIZE];
   NU32DIP_Startup(); // cache on, min flash wait, interrupts on, LED/button init, UART init
   NU32DIP_GREEN = 1;  // turn off the LEDs
@@ -48,9 +50,16 @@ int main()
         NU32DIP_WriteUART1("reset encoder\r\n");
         break;
       }
+      case 'r':
+      {
+        sprintf(buffer, "%d\r\n", get_mode());
+        NU32DIP_WriteUART1(buffer);
+        break;
+      }
       case 'q':
       {
         // handle q for quit. Later you may want to return to IDLE mode here. 
+        set_mode(IDLE);
         break;
       }
       default:

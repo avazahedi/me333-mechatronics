@@ -14,7 +14,7 @@ has_quit = False
 while not has_quit:
     print('PIC32 MOTOR DRIVER INTERFACE')
     # display the menu options; this list will grow
-    print('\tc: Get encoder count \td: Give a number, get num+1 \te: Set encoder count to 0 \tq: Quit') # '\t' is a tab
+    print('\tc: Get encoder count \n\td: Give a number, get num+1 \n\te: Set encoder count to 0 \n\tr: Get mode \n\tq: Quit') # '\t' is a tab
     # read the user's choice
     selection = input('\nENTER COMMAND: ')
     selection_endline = selection+'\n'
@@ -34,13 +34,30 @@ while not has_quit:
         n_str = ser.read_until(b'\n');  # get the incremented number back
         n_int = int(n_str) # turn it into an int
         print('Got back: ' + str(n_int) + '\n') # print it to the screen
-    if (selection == 'c'):
+    elif (selection == 'c'):
         ser.write((str(n_int)+'\n').encode());  # send the number
         n_str = ser.read_until(b'\n');  # get the incremented number back
         n_int = int(n_str)  # turn it into an int
         print('Got back encoder count: ' + str(n_int) + '\n')   # print it to the screen
-    if (selection == 'e'):
+    elif (selection == 'e'):
         print('Reset encoder ' + '\n')  # print it to the screen
+    elif (selection == 'r'):
+        n_str = ser.read_until(b'\n');  # get the mode int back
+        n_int = int(n_str)
+        # get equivalent name
+        if n_int == 0:
+            mode_name = 'IDLE'
+        elif n_int == 1:
+            mode_name = 'PWM'
+        elif n_int == 2:
+            mode_name = 'ITEST'
+        elif n_int == 3:
+            mode_name = 'HOLD'
+        elif n_int == 4:
+            mode_name = 'TRACK'
+        else:
+            mode_name = str(n_int)
+        print('Mode: ' + mode_name + ' ' + str(n_int) + '\n')
     elif (selection == 'q'):
         print('Exiting client')
         has_quit = True; # exit client

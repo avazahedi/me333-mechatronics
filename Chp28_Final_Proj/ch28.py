@@ -14,13 +14,15 @@ has_quit = False
 while not has_quit:
     print('PIC32 MOTOR DRIVER INTERFACE')
     # display the menu options; this list will grow
-    print('\tb: Read current sensor (mA) \n\\'
-          '\tc: Get encoder count \n\\'
-          '\td: Give a number, get num+1 \n\\'
-          '\te: Set encoder count to 0 \n\\'
-          '\tf: Set PWM (-100 to 100) \n\\'
-          '\tp: Unpower the motor) \n\\'
-          '\tr: Get mode \n\\'
+    print('\tb: Read current sensor (mA) \n'
+          '\tc: Get encoder count \n'
+          '\td: Give a number, get num+1 \n'
+          '\te: Set encoder count to 0 \n'
+          '\tf: Set PWM (-100 to 100) \n'
+          '\tg: Set current gains \n'
+          '\th: Get current gains \n'
+          '\tp: Unpower the motor) \n'
+          '\tr: Get mode \n'
           '\tq: Quit') # '\t' is a tab
     # read the user's choice
     selection = input('\nENTER COMMAND: ')
@@ -41,28 +43,52 @@ while not has_quit:
         n_str = ser.read_until(b'\n');  # get the incremented number back
         n_int = int(n_str) # turn it into an int
         print('Got back: ' + str(n_int) + '\n') # print it to the screen
+
     elif (selection == 'b'):
         n_str = ser.read_until(b'\n');  # get the current sensor (mA) back
         n_float = float(n_str)
         print('Current sensor: ' + str(n_float) + ' mA \n')
+    
     elif (selection == 'c'):
         ser.write((str(n_int)+'\n').encode());  # send the number
         n_str = ser.read_until(b'\n');  # get the incremented number back
         n_int = int(n_str)  # turn it into an int
         print('Got back encoder count: ' + str(n_int) + '\n')   # print it to the screen
+    
     elif (selection == 'e'):
         print('Reset encoder ' + '\n')  # print it to the screen
+    
     elif (selection == 'f'):
         n_str = input('Set PWM (-100 to 100): ') # get the number to send
         n_int = int(n_str) # turn it into an int
         print('number = ' + str(n_int)) # print it to the screen to double check
 
         ser.write((str(n_int)+'\n').encode()); # send the number
-        # n_str = ser.read_until(b'\n');  # get the incremented number back
-        # n_int = int(n_str) # turn it into an int
         print('PWM set\n') # print it to the screen
+    
+    elif (selection == 'g'):
+        gains_str = input('Set gains Kp Ki: ') # get the gains to send
+        kp_str, ki_str = gains_str.split(' ', 1)
+        kp_flt = float(kp_str) # turn it into a float
+        ki_flt = float(ki_str)
+        print('Kp = ' + str(kp_flt) + ', Ki = ' + str(ki_flt)) # print it to the screen to double check
+
+        ser.write((str(kp_flt) + ' ' + str(ki_flt) +'\n').encode()); # send the number
+        print('Current gains set')
+    
+    elif (selection == 'h'):
+        print('Current gains: ')
+        kp_str = ser.read_until(b'\n');  # get the incremented number back
+        kp_flt = float(kp_str)  # turn it into a float
+
+        ki_str = ser.read_until(b'\n');  # get the incremented number back
+        ki_flt = float(ki_str)  # turn it into a float
+
+        print('Kp = ' + str(kp_flt) + '\r\nKi = ' + str(ki_flt) + '\n') # print it to the screen to double check
+    
     elif (selection == 'p'):
         print('Unpowered the motor')
+    
     elif (selection == 'r'):
         n_str = ser.read_until(b'\n');  # get the mode int back
         n_int = int(n_str)
@@ -80,11 +106,13 @@ while not has_quit:
         else:
             mode_name = str(n_int)
         print('Mode: ' + mode_name + ' ' + str(n_int) + '\n')
+    
     elif (selection == 'q'):
         print('Exiting client')
         has_quit = True; # exit client
         # be sure to close the port
         ser.close()
+    
     else:
         print('Invalid Selection ' + selection_endline)
 

@@ -9,6 +9,8 @@
 #define PR2_ 9599
 #define PR3_ 2399
 static volatile int duty_cycle; // %
+static volatile float Kp = 0;
+static volatile float Ki = 0;
 
 void __ISR(_TIMER_2_VECTOR, IPL5SOFT) Controller(void)
 {
@@ -132,6 +134,24 @@ int main()
         NU32DIP_WriteUART1(buffer);
 
         duty_cycle = n;
+        break;
+      }
+      case 'g':
+      {
+        float kpt = 0, kit = 0;
+        NU32DIP_ReadUART1(buffer,BUF_SIZE);
+        sscanf(buffer, "%f %f", &kpt, &kit);
+        Kp = kpt;
+        Ki = kit;
+        break;
+      }
+      case 'h':
+      {
+        sprintf(buffer, "%f\r\n", Kp);
+        NU32DIP_WriteUART1(buffer);
+
+        sprintf(buffer, "%f\r\n", Ki);
+        NU32DIP_WriteUART1(buffer);
         break;
       }
       case 'p':

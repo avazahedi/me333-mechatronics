@@ -14,7 +14,14 @@ has_quit = False
 while not has_quit:
     print('PIC32 MOTOR DRIVER INTERFACE')
     # display the menu options; this list will grow
-    print('\tc: Get encoder count \n\td: Give a number, get num+1 \n\te: Set encoder count to 0 \n\tr: Get mode \n\tq: Quit') # '\t' is a tab
+    print('\tb: Read current sensor (mA) \n\\'
+          '\tc: Get encoder count \n\\'
+          '\td: Give a number, get num+1 \n\\'
+          '\te: Set encoder count to 0 \n\\'
+          '\tf: Set PWM (-100 to 100) \n\\'
+          '\tp: Unpower the motor) \n\\'
+          '\tr: Get mode \n\\'
+          '\tq: Quit') # '\t' is a tab
     # read the user's choice
     selection = input('\nENTER COMMAND: ')
     selection_endline = selection+'\n'
@@ -34,6 +41,10 @@ while not has_quit:
         n_str = ser.read_until(b'\n');  # get the incremented number back
         n_int = int(n_str) # turn it into an int
         print('Got back: ' + str(n_int) + '\n') # print it to the screen
+    elif (selection == 'b'):
+        n_str = ser.read_until(b'\n');  # get the current sensor (mA) back
+        n_float = float(n_str)
+        print('Current sensor: ' + str(n_float) + ' mA \n')
     elif (selection == 'c'):
         ser.write((str(n_int)+'\n').encode());  # send the number
         n_str = ser.read_until(b'\n');  # get the incremented number back
@@ -41,6 +52,17 @@ while not has_quit:
         print('Got back encoder count: ' + str(n_int) + '\n')   # print it to the screen
     elif (selection == 'e'):
         print('Reset encoder ' + '\n')  # print it to the screen
+    elif (selection == 'f'):
+        n_str = input('Set PWM (-100 to 100): ') # get the number to send
+        n_int = int(n_str) # turn it into an int
+        print('number = ' + str(n_int)) # print it to the screen to double check
+
+        ser.write((str(n_int)+'\n').encode()); # send the number
+        # n_str = ser.read_until(b'\n');  # get the incremented number back
+        # n_int = int(n_str) # turn it into an int
+        print('PWM set\n') # print it to the screen
+    elif (selection == 'p'):
+        print('Unpowered the motor')
     elif (selection == 'r'):
         n_str = ser.read_until(b'\n');  # get the mode int back
         n_int = int(n_str)

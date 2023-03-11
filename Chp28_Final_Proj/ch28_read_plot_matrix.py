@@ -35,7 +35,7 @@ def read_plot_matrix():
 from genref import genRef
 
 import serial
-ser = serial.Serial('COM95',230400,rtscts=1)
+ser = serial.Serial('/dev/ttyUSB0',230400)
 print('Opening port: ')
 print(ser.name)
 

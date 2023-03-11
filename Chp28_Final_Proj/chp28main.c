@@ -8,9 +8,16 @@
 #define BUF_SIZE 200
 #define PR2_ 9599
 #define PR3_ 2399
+#define PLOTPTS 100
+#define eint_max 100.0
 static volatile int duty_cycle; // %
-static volatile float Kp = 0;
-static volatile float Ki = 0;
+static volatile float Kp = 0.0;
+static volatile float Ki = 0.0;
+static volatile int count = 0;
+static volatile float eint = 0.0;
+static volatile int REFarray[PLOTPTS];      // reference values to plot
+static volatile int CURarray[PLOTPTS];      // measured values to plot
+static volatile int StoringData = 0;
 
 void __ISR(_TIMER_2_VECTOR, IPL5SOFT) Controller(void)
 {
@@ -32,17 +39,57 @@ void __ISR(_TIMER_2_VECTOR, IPL5SOFT) Controller(void)
         break;
       }
       case 2: {  // ITEST
+        unsigned int val = 0;
+        if (count < 25) {val = 200;}  // mA
+        else if (count < 50) {val = -200;}
+        else if (count < 75) {val = 200;}
+        else {val = -200;}
+
+        int current_sensor = INA219_read_current();
+        int error = -1*(val - current_sensor);
+        eint = eint + error;
+        float u = Kp*error + Ki*eint;
+        
+        if (u > 100.0) {
+          u = 100.0;
+        }
+        else if (u < -100.0) {
+            u = -100.0;
+        }
+
+        if (u < 0)
+        {
+          OC1RS = (int) ((u/-100.0) * PR3_);
+          LATBbits.LATB2 = 1;
+        }
+        else
+        {
+          OC1RS = (int) ((u/100.0) * PR3_);
+          LATBbits.LATB2 = 0;
+        }
+
+        if (StoringData) {
+          CURarray[count] = current_sensor;     // store data in global arrays
+          REFarray[count] = val;                // reference value
+          count++;
+        }
+
+        if (count == PLOTPTS) {
+          count = 0;
+          eint = 0;
+          StoringData = 0; // reset the flag
+          set_mode(IDLE);
+        }
+
         break;
       }
       case 3: {  // HOLD
         break;
       }
-      case 4: {  // TRACJ
+      case 4: {  // TRACK
         break;
       }
     }
-    // OC1RS = 0.25*(PR2_+1);
-    // LATBbits.LATB2 = 1;
 
     IFS0bits.T2IF = 0;          // clear the interrupt flag
 }
@@ -154,6 +201,24 @@ int main()
         NU32DIP_WriteUART1(buffer);
         break;
       }
+      case 'k':
+      {
+        StoringData = 1;
+        // eint = 0;
+        set_mode(ITEST);
+        while (StoringData) {;} // while storing data, do nothing
+
+        sprintf(buffer, "%d\r\n", PLOTPTS); // send number of samples
+        NU32DIP_WriteUART1(buffer);
+
+        for (int i=0; i<PLOTPTS; i++) { // send plot data to MATLAB
+          // when first number sent = 1, MATLAB knows we’re done
+          sprintf(buffer, "%d %d \r\n", CURarray[i], REFarray[i]);
+          NU32DIP_WriteUART1(buffer);
+        }
+
+        break;
+      }
       case 'p':
       {
         set_mode(IDLE);
@@ -177,6 +242,7 @@ int main()
         break;
       }
     }
+
   }
   return 0;
 }

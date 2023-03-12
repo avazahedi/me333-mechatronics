@@ -48,7 +48,10 @@ while not has_quit:
           '\tf: Set PWM (-100 to 100) \n'
           '\tg: Set current gains \n'
           '\th: Get current gains \n'
+          '\ti: Set position gains \n'
+          '\tj: Get position gains \n'
           '\tk: Test current gains \n'
+          '\tl: Go to angle (deg) \n'
           '\tp: Unpower the motor \n'
           '\tr: Get mode \n'
           '\tq: Quit') # '\t' is a tab
@@ -95,7 +98,7 @@ while not has_quit:
         print('PWM set\n') # print it to the screen
     
     elif (selection == 'g'):
-        gains_str = input('Set gains Kp Ki: ') # get the gains to send
+        gains_str = input('Set current gains Kp Ki: ') # get the gains to send
         kp_str, ki_str = gains_str.split(' ', 1)
         kp_flt = float(kp_str) # turn it into a float
         ki_flt = float(ki_str)
@@ -112,9 +115,43 @@ while not has_quit:
         ki_str = ser.read_until(b'\n');  # get the incremented number back
         ki_flt = float(ki_str)  # turn it into a float
 
-        print('Kp = ' + str(kp_flt) + '\r\nKi = ' + str(ki_flt) + '\n') # print it to the screen to double check
+        print('Kp = ' + str(kp_flt) + '\r\nKi = ' + str(ki_flt) + '\n') # print it to the screen
+
+    elif (selection == 'i'):
+        gains_str = input('Set position gains Kp Ki Kd: ') # get the gains to send
+        kp_str, ki_str, kd_str = gains_str.split(' ', 2)
+        kp_flt = float(kp_str) # turn it into a float
+        ki_flt = float(ki_str)
+        kd_flt = float(kd_str)
+        print('Kp = ' + str(kp_flt) + ', Ki = ' + str(ki_flt) + ', Kd = ' + str(kd_flt) + '\n') # print it to the screen to double check
+
+        ser.write((str(kp_flt) + ' ' + str(ki_flt) + ' ' + str(kd_flt) +'\n').encode()); # send the number
+        print('Position gains set')
+
+    elif (selection == 'j'):
+        print('Current gains: ')
+        kp_str = ser.read_until(b'\n');  # get the incremented number back
+        kp_flt = float(kp_str)  # turn it into a float
+
+        ki_str = ser.read_until(b'\n');  # get the incremented number back
+        ki_flt = float(ki_str)  # turn it into a float
+
+        kd_str = ser.read_until(b'\n');  # get the incremented number back
+        kd_flt = float(kd_str)  # turn it into a float
+
+        print('Kp = ' + str(kp_flt) + ', Ki = ' + str(ki_flt) + ', Kd = ' + str(kd_flt) + '\n') # print it to the screen
 
     elif (selection == 'k'):
+        read_plot_matrix()
+
+    elif (selection == 'l'):
+        ang_str = input('Go to angle (deg): ') # get the angle to send
+        ang = float(ang_str) # turn it into a float
+        print('Desired angle: ' + str(ang)) # print it to the screen to double check
+
+        ser.write((str(ang) + '\n').encode()); # send the number
+        print('Desired angle set \n')
+
         read_plot_matrix()
     
     elif (selection == 'p'):

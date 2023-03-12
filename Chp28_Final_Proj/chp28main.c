@@ -10,23 +10,79 @@
 #define PR3_ 2399
 #define PR4_ 14999 // 239999
 #define PLOTPTS 100
+#define TRACKPTS 1000
 #define eint_max 100.0
 static volatile int duty_cycle; // %
 static volatile float Kp = 0.1;
 static volatile float Ki = 0.07;
-static volatile int count = 0, count_h = 0;
+static volatile int count = 0, count_h = 0, count_traj = 0;
 static volatile float eint = 0.0, eint_pos = 0.0, eprev_pos = 0.0;
-static volatile int REFarray[PLOTPTS];      // reference values to plot
+static volatile float REFarray[PLOTPTS];      // reference values to plot
 static volatile int CURarray[PLOTPTS];      // measured values to plot
+static volatile float POSarray[PLOTPTS];
 static volatile int StoringData = 0;
-static volatile float pKp=0.7, pKi=0.0, pKd=0.1;
+static volatile float pKp=0.95, pKi=0.0, pKd=0.1;
 static volatile float usr_angle=0.0; // deg
 static volatile float commanded_current = 5.0;
+
+static volatile float RefTraj[TRACKPTS];    // store trajectory values
+static volatile float REFarray2[TRACKPTS];
+static volatile float POSarray2[TRACKPTS];
 
 void __ISR(_TIMER_4_VECTOR, IPL5SOFT) Position_Controller(void)
 {
   switch(get_mode()) {
     case 3: { // HOLD
+      // static float eprev_pos = 0.0;
+      // static float eint_pos = 0.0;
+
+      WriteUART2("a"); // request the encoder count
+      while(!get_encoder_flag()){} // wait for the Pico to respond
+      set_encoder_flag(0); // clear the flag so you can read again later
+      int p = get_encoder_count(); // get the encoder value
+
+      float enc_ang = (float) p * 360.0/1400.0;
+
+      int error = usr_angle - enc_ang;
+      eint_pos = eint_pos + error;
+      float u = pKp*error + pKi*eint_pos + pKd*(error - eprev_pos)/0.005;
+
+      // if (u < -100.0) {
+      //   u = -100.0;
+      // }
+      // else if (u > 100.0) {
+      //   u = 100.0;
+      // }
+
+      commanded_current = u;
+
+      eprev_pos = error;
+
+      // char msg[100];
+      // sprintf(msg, "enc_ang: %f\r\nusr_angle: %f\r\n", enc_ang, usr_angle);
+      // NU32DIP_WriteUART1(msg);
+
+      POSarray[count_h] = enc_ang;     // store data in global arrays
+      REFarray[count_h] = usr_angle;                // reference value
+      count_h++;
+
+      // char msg[100];
+      // sprintf(msg, "posarray: %f\r\nrefarray: %f\r\n", POSarray[count_h], REFarray[count_h]);
+      // NU32DIP_WriteUART1(msg);
+
+      if (count_h == PLOTPTS) {
+        count_h = 0;
+        eint_pos = 0;
+        eprev_pos = 0;
+        set_mode(IDLE);
+      }
+      break;
+    }
+
+    case 4: { // TRACK
+      // static float eprev_pos = 0.0;
+      // static float eint_pos = 0.0;
+
       WriteUART2("a"); // request the encoder count
       while(!get_encoder_flag()){} // wait for the Pico to respond
       set_encoder_flag(0); // clear the flag so you can read again later
@@ -34,13 +90,26 @@ void __ISR(_TIMER_4_VECTOR, IPL5SOFT) Position_Controller(void)
 
       float ang = (float) p * 360.0/1400.0;
 
-      int error = usr_angle - ang;
+      float ref_traj = RefTraj[count_traj];
+
+      int error = ref_traj - ang;
       eint_pos = eint_pos + error;
-      float u = pKp*error + pKi*eint + pKd*(error - eprev_pos);
+      float u = pKp*error + pKi*eint_pos + pKd*(error - eprev_pos)/0.005;
 
       commanded_current = u;
 
       eprev_pos = error;
+
+      POSarray2[count_traj] = ang;     // store data in global arrays
+      REFarray2[count_traj] = RefTraj[count_traj];                // reference value
+      count_traj++;
+
+      if (count_traj == TRACKPTS) {
+        count_traj = 0;
+        // eint_pos = 0;
+        // set_mode(HOLD);
+      }
+
       break;
     }
   }
@@ -68,6 +137,8 @@ void __ISR(_TIMER_2_VECTOR, IPL5SOFT) Current_Controller(void)
         break;
       }
       case 2: {  // ITEST
+        // static float eint = 0.0;
+
         unsigned int val = 0;
         if (count < 25) {val = 200;}  // mA
         else if (count < 50) {val = -200;}
@@ -113,6 +184,8 @@ void __ISR(_TIMER_2_VECTOR, IPL5SOFT) Current_Controller(void)
         break;
       }
       case 3: {  // HOLD
+        // static float eint = 0.0;
+
         int current_sensor = INA219_read_current();
         float error = -1*(commanded_current - current_sensor);
         eint = eint + error;
@@ -139,20 +212,36 @@ void __ISR(_TIMER_2_VECTOR, IPL5SOFT) Current_Controller(void)
           OC1RS = (int) ((u/100.0) * PR3_);
           LATBbits.LATB2 = 0;
         }
-
-        CURarray[count_h] = current_sensor;     // store data in global arrays
-        REFarray[count_h] = commanded_current;                // reference value
-        count_h++;
-
-        if (count_h == PLOTPTS) {
-          count_h = 0;
-          eint = 0;
-          // set_mode(IDLE);
-        }
         
         break;
       }
       case 4: {  // TRACK
+        // NU32DIP_WriteUART1("inside t4 isr\n");
+        // static float eint = 0.0;
+
+        int current_sensor = INA219_read_current();
+        float error = -1*(commanded_current - current_sensor);
+        eint = eint + error;
+        float u = Kp*error + Ki*eint;
+        
+        if (u > 100.0) {
+          u = 100.0;
+        }
+        else if (u < -100.0) {
+            u = -100.0;
+        }
+
+        if (u < 0)
+        {
+          OC1RS = (int) ((u/-100.0) * PR3_);
+          LATBbits.LATB2 = 1;
+        }
+        else
+        {
+          OC1RS = (int) ((u/100.0) * PR3_);
+          LATBbits.LATB2 = 0;
+        }
+
         break;
       }
     }
@@ -167,7 +256,6 @@ int main()
   NU32DIP_Startup(); // cache on, min flash wait, interrupts on, LED/button init, UART init
   NU32DIP_GREEN = 1;  // turn off the LEDs
   NU32DIP_YELLOW = 1;        
-  set_encoder_flag(0);
   __builtin_disable_interrupts();
   // in future, initialize modules or peripherals here
   UART2_Startup();
@@ -179,7 +267,7 @@ int main()
   IEC0bits.T2IE = 1;              // enable T2 interrupts
 
   IPC4bits.T4IP = 5;                // set priority 5 subpriority 0
-  IPC4bits.T4IS = 0;
+  IPC4bits.T4IS = 1;
   IFS0bits.T4IF = 0;                // clear T4 flag status
   IEC0bits.T4IE = 1;              // enable T4 interrupts
 
@@ -205,8 +293,8 @@ int main()
   OC1CONbits.ON = 1;       // turn on OC1
 
   // for position control ISR (200 Hz)
-  T4CONbits.TCKPS = 0;     // Timer4 prescaler N=1
-  PR4 = PR4_;              // period
+  T4CONbits.TCKPS = 4;     // Timer4 prescaler
+  PR4 = PR4_;              // 
   TMR4 = 0;                // initial TMR4 count is 0
   T4CONbits.ON = 1;        // turn on Timer4
 
@@ -304,7 +392,6 @@ int main()
       case 'k':
       {
         StoringData = 1;
-        // eint = 0;
         set_mode(ITEST);
         while (StoringData) {;} // while storing data, do nothing
 
@@ -319,24 +406,62 @@ int main()
 
         break;
       }
-      case 'l':
+      case 'l': // go to angle
       {
-        float anglet = 0.0;
+        WriteUART2("b");
         NU32DIP_ReadUART1(buffer,BUF_SIZE);
-        sscanf(buffer, "%f", &anglet);
-        usr_angle = anglet;
-
-        set_mode(HOLD);
+        sscanf(buffer, "%f", &usr_angle);
 
         sprintf(buffer, "%d\r\n", PLOTPTS); // send number of samples
         NU32DIP_WriteUART1(buffer);
 
+        set_mode(HOLD);
+
+        while (get_mode() == HOLD) {;}
+
         for (int i=0; i<PLOTPTS; i++) { // send plot data to MATLAB
           // when first number sent = 1, MATLAB knows we’re done
-          sprintf(buffer, "%d %d \r\n", CURarray[i], REFarray[i]);
+          sprintf(buffer, "%f %f \r\n", POSarray[i], REFarray[i]);
           NU32DIP_WriteUART1(buffer);
         }
-        // set_mode(IDLE);
+        break;
+      }
+      case 'm': // Step Trajectory
+      {
+        for (int i=0; i < TRACKPTS; i++)
+        {
+          float refpos = 0.0;
+          NU32DIP_ReadUART1(buffer,BUF_SIZE);
+          sscanf(buffer, "%f\n", &refpos);
+          // StepTraj[i] = refpos;
+          RefTraj[i] = refpos;
+        }
+
+        break;
+      }
+      case 'n': // Cubic Trajectory
+      {
+        for (int i=0; i < TRACKPTS; i++)
+        {
+          float refpos = 0.0;
+          NU32DIP_ReadUART1(buffer,BUF_SIZE);
+          sscanf(buffer, "%f\n", &refpos);
+          // StepTraj[i] = refpos;
+          RefTraj[i] = refpos;
+        }
+        break;
+      }
+      case 'o':
+      {
+        sprintf(buffer, "%d\r\n", TRACKPTS); // send number of samples
+        NU32DIP_WriteUART1(buffer);
+
+        set_mode(TRACK);
+
+        for (int i=0; i<TRACKPTS; i++) { // send plot data to MATLAB
+          sprintf(buffer, "%f %f \r\n", POSarray2[i], REFarray2[i]);
+          NU32DIP_WriteUART1(buffer);
+        }
         break;
       }
       case 'p':

@@ -36,6 +36,8 @@ def read_plot_matrix():
     plt.xlabel('index')
     plt.show()
 
+from genref import genRef
+
 has_quit = False
 # menu loop
 while not has_quit:
@@ -52,6 +54,9 @@ while not has_quit:
           '\tj: Get position gains \n'
           '\tk: Test current gains \n'
           '\tl: Go to angle (deg) \n'
+          '\tm: Load step trajectory \n'
+          '\tn: Load cubic trajectory \n'
+          '\to: Execute trajectory \n'
           '\tp: Unpower the motor \n'
           '\tr: Get mode \n'
           '\tq: Quit') # '\t' is a tab
@@ -81,7 +86,6 @@ while not has_quit:
         print('Current sensor: ' + str(n_float) + ' mA \n')
     
     elif (selection == 'c'):
-        ser.write((str(n_int)+'\n').encode());  # send the number
         n_str = ser.read_until(b'\n');  # get the incremented number back
         n_int = int(n_str)  # turn it into an int
         print('Got back encoder count: ' + str(n_int) + '\n')   # print it to the screen
@@ -152,6 +156,33 @@ while not has_quit:
         ser.write((str(ang) + '\n').encode()); # send the number
         print('Desired angle set \n')
 
+        read_plot_matrix()
+
+    elif (selection == 'm'):        
+        ref = genRef('step')
+
+        for i in range(len(ref)):
+            ser.write((str(ref[i]) + '\n').encode()); # send each ref position
+
+        # t = range(len(ref))
+        # plt.plot(t,ref,'r*-')
+        # plt.ylabel('value')
+        # plt.xlabel('index')
+        # plt.show()
+
+    elif (selection == 'n'):
+        ref = genRef('cubic')
+
+        for i in range(len(ref)):
+            ser.write((str(ref[i]) + '\n').encode()); # send each ref position
+
+        # t = range(len(ref))
+        # plt.plot(t,ref,'r*-')
+        # plt.ylabel('value')
+        # plt.xlabel('index')
+        # plt.show()
+
+    elif (selection == 'o'):
         read_plot_matrix()
     
     elif (selection == 'p'):
